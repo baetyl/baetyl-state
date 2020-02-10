@@ -50,6 +50,7 @@ func NewServer(cfg Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	logger.Info("db inited", log.Any("driver", dbConf.Driver), log.Any("source", dbConf.Source))
 	s, err := link.NewServer(cfg.Server, new(Authenticator))
 	if err != nil {
 		return nil, err
@@ -79,6 +80,7 @@ func (s *Server) Close() {
 	}
 	if s.db != nil {
 		s.db.Close()
+		s.log.Info("db has closed")
 	}
 }
 

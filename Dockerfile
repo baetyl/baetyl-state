@@ -4,4 +4,4 @@ RUN cd /go/src/ && make build-static
 
 FROM --platform=$TARGETPLATFORM busybox
 COPY --from=devel /go/src/baetyl-state /bin/
-ENTRYPOINT ["baetyl-broker"]
+ENTRYPOINT ["baetyl-state"]

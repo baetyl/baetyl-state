@@ -22,6 +22,10 @@ func TestNew(t *testing.T) {
 
 	_, err = New(Conf{Driver: "sqlite3", Source: path.Join(dir, "kv.db")})
 	assert.NoError(t, err)
+
+	_, err = New(Conf{Driver: "sqlite3", Source: "var/lib/kv.db"})
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "unable to open database file: no such file or directory")
 }
 
 func TestConf(t *testing.T) {

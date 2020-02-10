@@ -3,7 +3,6 @@ database:
   source: var/lib/baetyl/db/kv.db
 server:
   address: tcp://127.0.0.1:50040
-  maxConcurrent: 1000
 logger:
   path: var/log/baetyl/baetyl.log
   level: debug
