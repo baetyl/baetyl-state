@@ -19,7 +19,6 @@ type Config struct {
 
 // Server server to handle message
 type Server struct {
-	//conf link.ServerConfig
 	svr *grpc.Server
 }
 
@@ -38,7 +37,7 @@ func NewServer(cfg Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	kv.RegisterKVServiceServer(s, NewKVService(d))
+	kv.RegisterKVServiceServer(s, NewKVService(d, logger))
 	listener, err := net.Listen(uri.Scheme, uri.Host)
 	if err != nil {
 		return nil, err
