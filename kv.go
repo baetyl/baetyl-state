@@ -84,19 +84,5 @@ func (s *Server) Close() {
 
 func (a Authenticator) Authenticate(ctx context.Context) error {
 	//todo: how to store token beforehead
-	//md, ok := metadata.FromIncomingContext(ctx)
-	//if !ok {
-	//	return link.ErrUnauthenticated
-	//}
-	//var u, p string
-	//if val, ok := md[link.KeyUsername]; ok {
-	//	u = val[0]
-	//}
-	//if val, ok := md[link.KeyPassword]; ok {
-	//	p = val[0]
-	//}
-	//if ok := a.m.Auth(u, p); !ok {
-	//	return link.ErrUnauthenticated
-	//}
 	return nil
 }
