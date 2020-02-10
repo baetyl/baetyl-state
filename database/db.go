@@ -24,8 +24,8 @@ type DB interface {
 
 // Conf the configuration of database
 type Conf struct {
-	Driver string `yaml:"driver" json:"driver" default:"sqlite3"`
-	Source string `yaml:"source" json:"source" default:"var/lib/baetyl/db/kv.db"`
+	Driver string
+	Source string
 }
 
 // New KV database by given name

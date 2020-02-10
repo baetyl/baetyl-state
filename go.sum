@@ -9,6 +9,8 @@ github.com/abiosoft/ishell v2.0.0+incompatible/go.mod h1:HQR9AqF2R3P4XXpMpI0NAzg
 github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db/go.mod h1:rB3B4rKii8V21ydCbIzH5hZiCQE7f5E9SzUb/ZZx530=
 github.com/baetyl/baetyl-go v0.1.7 h1:U6C1a8Niqn4A1KZHkEYlyyaKLyLNHOFp+QEBytNKUGU=
 github.com/baetyl/baetyl-go v0.1.7/go.mod h1:bGk+qk5pIiMJcADfbRw91CbcIgvUWdN/3gqp8yH5usw=
+github.com/baetyl/baetyl-go v0.1.8 h1:zfDaMCc2G8xXpVNH3SreIloOAfz0mZ0iGYrdUPeRsLw=
+github.com/baetyl/baetyl-go v0.1.8/go.mod h1:bGk+qk5pIiMJcADfbRw91CbcIgvUWdN/3gqp8yH5usw=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=

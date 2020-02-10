@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
+	"path"
 
 	"github.com/baetyl/baetyl-go/kv"
 	"github.com/baetyl/baetyl-go/link"
@@ -11,44 +13,48 @@ import (
 	"github.com/baetyl/baetyl-go/utils"
 	"github.com/baetyl/baetyl-state/database"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 //Config config of state
 type Config struct {
-	Database database.Conf
-	Server   link.ServerConfig
+	Database database.Conf     `yaml:"database" json:"database" default:"{\"driver\":\"sqlite3\",\"source\":\"var/lib/baetyl/db/kv.db\"}"`
+	Server   link.ServerConfig `yaml:"server" json:"server" default:"{\"address\":\"tcp://127.0.0.1:50040\"}"`
 }
 
 // Server server to handle message
 type Server struct {
 	svr *grpc.Server
+	db  database.DB
 	log *log.Logger
 }
 
 // Authenticator authenticator to authenticate tokens
 type Authenticator struct{}
 
+//NewServer new grpc server
 func NewServer(cfg Config) (*Server, error) {
-	logger := log.With(log.Any("main", "baetyl-state"))
+	logger := log.With()
 	uri, err := utils.ParseURL(cfg.Server.Address)
 	if err != nil {
 		return nil, err
+	}
+	err = os.MkdirAll(path.Dir(cfg.Database.Source), 0755)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make db directory: %s", err.Error())
 	}
 	dbConf := database.Conf{
 		Driver: cfg.Database.Driver,
 		Source: cfg.Database.Source,
 	}
-	d, err := database.New(dbConf)
+	db, err := database.New(dbConf)
 	if err != nil {
-		d.Close()
 		return nil, err
 	}
 	s, err := link.NewServer(cfg.Server, new(Authenticator))
 	if err != nil {
 		return nil, err
 	}
-	kv.RegisterKVServiceServer(s, NewKVService(d, logger))
+	kv.RegisterKVServiceServer(s, NewKVService(db, logger))
 	listener, err := net.Listen(uri.Scheme, uri.Host)
 	if err != nil {
 		return nil, err
@@ -61,6 +67,7 @@ func NewServer(cfg Config) (*Server, error) {
 	}()
 	return &Server{
 		svr: s,
+		db:  db,
 		log: logger,
 	}, nil
 }
@@ -70,16 +77,17 @@ func (s *Server) Close() {
 	if s.svr != nil {
 		s.svr.Stop()
 	}
+	if s.db != nil {
+		s.db.Close()
+	}
 }
 
 func (a Authenticator) Authenticate(ctx context.Context) error {
 	//todo: how to store token beforehead
-	metadata.FromIncomingContext(ctx)
 	//md, ok := metadata.FromIncomingContext(ctx)
 	//if !ok {
 	//	return link.ErrUnauthenticated
 	//}
-
 	//var u, p string
 	//if val, ok := md[link.KeyUsername]; ok {
 	//	u = val[0]
