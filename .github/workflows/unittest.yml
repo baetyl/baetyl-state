@@ -13,6 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Build
-        run: make build
+        run: make all
       - name: Run unittest
         run: make test
