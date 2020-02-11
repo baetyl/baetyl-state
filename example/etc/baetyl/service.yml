@@ -1,0 +1,8 @@
+database:
+  driver: sqlite3
+  source: var/lib/baetyl/db/kv.db
+server:
+  address: tcp://127.0.0.1:50040
+logger:
+  path: var/log/baetyl/baetyl.log
+  level: debug
