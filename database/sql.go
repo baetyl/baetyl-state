@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/baetyl/baetyl-go/kv"
 )
@@ -18,7 +19,7 @@ var schema = map[string][]string{
 }
 
 func init() {
-	Factories["sqlite3"] = _new
+	Factories["sqlite3"] = newSql
 }
 
 // sqldb the backend SQL DB to persist values
@@ -28,7 +29,7 @@ type sqldb struct {
 }
 
 // New creates a new sql database
-func _new(conf Conf) (DB, error) {
+func newSql(conf Conf) (DB, error) {
 	db, err := sql.Open(conf.Driver, conf.Source)
 	if err != nil {
 		return nil, err
@@ -49,6 +50,9 @@ func (d *sqldb) Conf() Conf {
 
 // Set put key and value into SQL DB
 func (d *sqldb) Set(kv *kv.KV) error {
+	if kv.Key == "" {
+		return errors.New("key required")
+	}
 	stmt, err := d.Prepare("insert into kv(key,value) values (?,?) on conflict(key) do update set value=excluded.value")
 	if err != nil {
 		return err

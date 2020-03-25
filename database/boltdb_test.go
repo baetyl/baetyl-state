@@ -1,48 +1,45 @@
 package database
 
 import (
+	"github.com/baetyl/baetyl-go/kv"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"path"
-	"strconv"
 	"testing"
-
-	"github.com/baetyl/baetyl-go/kv"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestNewSqlite(t *testing.T) {
+func TestNewBoltDB(t *testing.T) {
 	dir, err := ioutil.TempDir("", t.Name())
 	assert.NoError(t, err)
 	defer os.RemoveAll(dir)
 
-	_, err = New(Conf{Driver: "sqlite2", Source: path.Join(dir, "kv.db")})
+	_, err = New(Conf{Driver: "unknown", Source: path.Join(dir, "kv.db")})
 	assert.Error(t, err)
 
-	_, err = New(Conf{Driver: "sqlite3", Source: path.Join(dir, "kv.db")})
+	_, err = New(Conf{Driver: "boltdb", Source: path.Join(dir, "kv.db")})
 	assert.NoError(t, err)
 
-	_, err = New(Conf{Driver: "sqlite3", Source: "var/lib/kv.db"})
+	_, err = New(Conf{Driver: "boltdb", Source: "var/lib/kv.db"})
 	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "unable to open database file: no such file or directory")
+	assert.Equal(t, err.Error(), "open var/lib/kv.db: no such file or directory")
 }
 
-func TestSqliteConf(t *testing.T) {
-	conf := Conf{Driver: "sqlite3", Source: path.Join("test", "kv.db")}
+func TestBoltDbConf(t *testing.T) {
+	conf := Conf{Driver: "boltdb", Source: path.Join("test", "kv.db")}
 	db := sqldb{nil, conf}
 	assert.Equal(t, db.Conf(), conf)
 }
 
-func TestDatabaseSQLiteKV(t *testing.T) {
+func TestDatabaseBoltDBKV(t *testing.T) {
 	dir, err := ioutil.TempDir("", t.Name())
 	assert.NoError(t, err)
 	defer os.RemoveAll(dir)
 
-	db, err := New(Conf{Driver: "sqlite3", Source: path.Join(dir, "kv.db")})
+	db, err := New(Conf{Driver: "boltdb", Source: path.Join(dir, "kv.db")})
 	assert.NoError(t, err)
 	assert.NotNil(t, db)
-	assert.Equal(t, "sqlite3", db.Conf().Driver)
+	assert.Equal(t, "boltdb", db.Conf().Driver)
 	defer db.Close()
 
 	k1 := kv.KV{
@@ -111,7 +108,7 @@ func TestDatabaseSQLiteKV(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, vs.Kvs, 4)
 
-	//list db
+	// list db
 	vs, err = db.List("/")
 	assert.NoError(t, err)
 	assert.Len(t, vs.Kvs, 3)
@@ -242,41 +239,4 @@ func TestDatabaseSQLiteKV(t *testing.T) {
 	vs, err = db.List("/陈")
 	assert.NoError(t, err)
 	assert.Len(t, vs.Kvs, 0)
-}
-
-func BenchmarkDatabaseSQLite(b *testing.B) {
-	dir, err := ioutil.TempDir("", "")
-	assert.NoError(b, err)
-	defer os.RemoveAll(dir)
-
-	db, err := New(Conf{Driver: "sqlite3", Source: path.Join(dir, "t.db")})
-	assert.NoError(b, err)
-	assert.NotNil(b, db)
-	defer db.Close()
-
-	// list db
-	vs, err := db.List("/")
-	assert.NoError(b, err)
-	assert.Len(b, vs.Kvs, 0)
-
-	k1 := "/"
-	b.ResetTimer()
-	b.Run("put", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			key := k1 + strconv.Itoa(i)
-			db.Set(&kv.KV{Key: key, Value: []byte(key)})
-		}
-	})
-	b.Run("get", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			key := k1 + strconv.Itoa(i)
-			db.Get(key)
-		}
-	})
-	b.Run("del", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			key := k1 + strconv.Itoa(i)
-			db.Del(key)
-		}
-	})
 }
