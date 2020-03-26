@@ -13,7 +13,7 @@ import (
 
 //Config config of state
 type Config struct {
-	Database database.Conf `yaml:"database" json:"database" default:"{\"driver\":\"boltdb\",\"source\":\"var/lib/baetyl/db/kv.db\"}"`
+	Database database.Conf `yaml:"database" json:"database" default:"{\"driver\":\"boltdb\",\"source\":\"var/lib/baetyl/state.db\"}"`
 	Server   ServerConfig  `yaml:"server" json:"server"`
 }
 
