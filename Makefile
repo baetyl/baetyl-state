@@ -1,6 +1,6 @@
 MODULE:=baetyl-state
 SRC_FILES:=$(shell find . -type f -name '*.go')
-PLATFORM_ALL:=darwin/amd64 linux/amd64 linux/arm64 linux/386 linux/arm/v7
+PLATFORM_ALL:=darwin/amd64 linux/amd64 linux/arm64 linux/arm/v7
 
 GIT_TAG:=$(shell git tag --contains HEAD)
 GIT_REV:=git-$(shell git rev-parse --short HEAD)
@@ -41,8 +41,8 @@ image:
 	@echo "BUILDX: $(REGISTRY)$(MODULE):$(VERSION)"
 	@-docker buildx create --name baetyl
 	@docker buildx use baetyl
+	@docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 	docker buildx build $(XFLAGS) --platform $(XPLATFORMS) -t $(REGISTRY)$(MODULE):$(VERSION) -f Dockerfile .
-
 
 .PHONY: test
 test: fmt

@@ -16,7 +16,7 @@ type KVHandler struct {
 	log *log.Logger
 }
 
-// NewKVHandler new kv service
+// NewKVHandler new kv handler
 func NewKVHandler(db database.DB, log *log.Logger) *KVHandler {
 	return &KVHandler{
 		db:  db,
