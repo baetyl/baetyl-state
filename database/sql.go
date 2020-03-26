@@ -3,8 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-
-	"github.com/baetyl/baetyl-go/kv"
 )
 
 var placeholderValue = "(?)"
@@ -49,7 +47,7 @@ func (d *sqldb) Conf() Conf {
 }
 
 // Set put key and value into SQL DB
-func (d *sqldb) Set(kv *kv.KV) error {
+func (d *sqldb) Set(kv *KV) error {
 	if kv.Key == "" {
 		return errors.New("key required")
 	}
@@ -63,14 +61,14 @@ func (d *sqldb) Set(kv *kv.KV) error {
 }
 
 // Get gets value by key from SQL DB
-func (d *sqldb) Get(key string) (*kv.KV, error) {
+func (d *sqldb) Get(key string) (*KV, error) {
 	rows, err := d.Query("select value from kv where key=?", key)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	kv := &kv.KV{Key: key}
+	kv := &KV{Key: key}
 	if rows.Next() {
 		err = rows.Scan(&kv.Value)
 		if err != nil {
@@ -88,21 +86,21 @@ func (d *sqldb) Del(key string) error {
 }
 
 // List list kvs with the prefix
-func (d *sqldb) List(prefix string) (*kv.KVs, error) {
+func (d *sqldb) List(prefix string) ([]KV, error) {
 	rows, err := d.Query("select key, value from kv where key like ?", prefix+"%")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	kvs := &kv.KVs{}
+	var kvs []KV
 	for rows.Next() {
-		kv := new(kv.KV)
+		var kv KV
 		err = rows.Scan(&kv.Key, &kv.Value)
 		if err != nil {
 			return nil, err
 		}
-		kvs.Kvs = append(kvs.Kvs, kv)
+		kvs = append(kvs, kv)
 	}
 	return kvs, nil
 }

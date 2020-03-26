@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/baetyl/baetyl-go/kv"
 	"github.com/boltdb/bolt"
 )
 
@@ -37,20 +36,21 @@ func (d *boltDb) Conf() Conf {
 }
 
 // Set put key and value into BoltDB
-func (d *boltDb) Set(kv *kv.KV) error {
+func (d *boltDb) Set(kv *KV) error {
 	return d.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists(d.bucket)
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte(kv.Key), kv.Value)
+		err = b.Put([]byte(kv.Key), kv.Value)
+		return err
 	})
 }
 
 // Get gets value by key from BoltDB
-func (d *boltDb) Get(key string) (_kv *kv.KV, err error) {
+func (d *boltDb) Get(key string) (kv *KV, err error) {
 	err = d.View(func(tx *bolt.Tx) error {
-		_kv = &kv.KV{Key: key}
+		kv = &KV{Key: key}
 		b := tx.Bucket(d.bucket)
 		if b == nil {
 			return nil
@@ -59,8 +59,8 @@ func (d *boltDb) Get(key string) (_kv *kv.KV, err error) {
 		if len(iv) == 0 {
 			return nil
 		}
-		_kv.Value = make([]byte, len(iv))
-		copy(_kv.Value, iv)
+		kv.Value = make([]byte, len(iv))
+		copy(kv.Value, iv)
 		return nil
 	})
 	return
@@ -78,10 +78,9 @@ func (d *boltDb) Del(key string) error {
 }
 
 // List list kvs with the prefix from BoltDB
-func (d *boltDb) List(prefix string) (kvs *kv.KVs, err error) {
+func (d *boltDb) List(prefix string) (kvs []KV, err error) {
 	err = d.View(func(tx *bolt.Tx) error {
-		kvs = new(kv.KVs)
-		// Assume bucket exists and has keys
+		//var kvs []KV
 		b := tx.Bucket(d.bucket)
 		if b == nil {
 			return nil
@@ -90,11 +89,11 @@ func (d *boltDb) List(prefix string) (kvs *kv.KVs, err error) {
 
 		prefix := []byte(prefix)
 		for k, v := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = c.Next() {
-			_kv := new(kv.KV)
-			_kv.Key = string(k)
-			_kv.Value = make([]byte, len(v))
-			copy(_kv.Value, v)
-			kvs.Kvs = append(kvs.Kvs, _kv)
+			var kv KV
+			kv.Key = string(k)
+			kv.Value = make([]byte, len(v))
+			copy(kv.Value, v)
+			kvs = append(kvs, kv)
 		}
 		return nil
 	})
