@@ -1,6 +1,9 @@
-MODULE:=baetyl-state
+MODULE:=state
+BIN:=baetyl-$(MODULE)
 SRC_FILES:=$(shell find . -type f -name '*.go')
 PLATFORM_ALL:=darwin/amd64 linux/amd64 linux/arm64 linux/arm/v7
+
+export DOCKER_CLI_EXPERIMENTAL=enabled
 
 GIT_TAG:=$(shell git tag --contains HEAD)
 GIT_REV:=git-$(shell git rev-parse --short HEAD)
@@ -28,13 +31,13 @@ XPLATFORMS:=$(shell echo $(filter-out darwin/amd64,$(PLATFORMS)) | sed 's: :,:g'
 
 .PHONY: all
 all: $(SRC_FILES)
-	@echo "BUILD $(MODULE)"
-	@env CGO_ENABLED=1 go build -o $(MODULE) $(GO_FLAGS) .
+	@echo "BUILD $(BIN)"
+	@env CGO_ENABLED=1 go build -o $(BIN) $(GO_FLAGS) .
 
 .PHONY: build-static
 build-static: $(SRC_FILES)
-	@echo "BUILD $(MODULE)"
-	@env GO111MODULE=on GOPROXY=https://goproxy.cn CGO_ENABLED=1 go build -o $(MODULE) $(GO_FLAGS_STATIC) .
+	@echo "BUILD $(BIN)"
+	@env GO111MODULE=on GOPROXY=https://goproxy.cn CGO_ENABLED=1 go build -o $(BIN) $(GO_FLAGS_STATIC) .
 
 .PHONY: image
 image: 
@@ -55,4 +58,4 @@ fmt:
 
 .PHONY: clean
 clean:
-	@rm -rf $(MODULE)
+	@rm -rf $(BIN)
