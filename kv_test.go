@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/baetyl/baetyl-go/http"
 	"io/ioutil"
 	"os"
 	"path"
@@ -36,7 +37,7 @@ func TestKV(t *testing.T) {
 				Driver: "boltdb",
 				Source: path.Join(dir, "kv3.db"),
 			},
-			Server: ServerConfig{
+			Server: http.ServerConfig{
 				Address: "127.0.0.1:50030",
 			},
 		},
@@ -182,7 +183,7 @@ func TestHttps(t *testing.T) {
 				Driver: "boltdb",
 				Source: path.Join(dir, "kv3.db"),
 			},
-			Server: ServerConfig{
+			Server: http.ServerConfig{
 				Address: "127.0.0.1:50060",
 				Certificate: utils.Certificate{
 					Cert: "example/var/lib/baetyl/testcert/server.pem",
@@ -342,7 +343,7 @@ func TestHttpKVFail(t *testing.T) {
 				Driver: "errdb",
 				Source: path.Join(dir, "kv3.db"),
 			},
-			Server: ServerConfig{
+			Server: http.ServerConfig{
 				Address: "127.0.0.1:50040",
 			},
 		},
@@ -416,7 +417,7 @@ func TestAddress(t *testing.T) {
 				Driver: "boltdb",
 				Source: path.Join(dir, "kv3.db"),
 			},
-			Server: ServerConfig{
+			Server: http.ServerConfig{
 				Address: "http://127.0.0.1:50070",
 			},
 		},
@@ -456,7 +457,7 @@ func TestAddress(t *testing.T) {
 				Driver: "boltdb",
 				Source: path.Join(dir, "kv4.db"),
 			},
-			Server: ServerConfig{
+			Server: http.ServerConfig{
 				Address: "127.0.0.1:50080",
 			},
 		},
