@@ -48,6 +48,7 @@ func TestKV(t *testing.T) {
 	server, err := NewServer(conf.serverConf)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, server)
+	defer server.Close()
 	time.Sleep(time.Second)
 
 	kv1 := database.KV{
@@ -203,6 +204,7 @@ func TestHttps(t *testing.T) {
 	server, err := NewServer(conf.serverConf)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, server)
+	defer server.Close()
 	time.Sleep(time.Second)
 
 	kv1 := database.KV{
@@ -354,6 +356,7 @@ func TestHttpKVFail(t *testing.T) {
 	server, err := NewServer(conf.serverConf)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, server)
+	defer server.Close()
 	time.Sleep(time.Second)
 
 	kv1 := database.KV{
@@ -429,6 +432,7 @@ func TestAddress(t *testing.T) {
 	server, err := NewServer(conf.serverConf)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, server)
+	defer server.Close()
 	time.Sleep(time.Second)
 
 	kv1 := database.KV{
@@ -469,6 +473,7 @@ func TestAddress(t *testing.T) {
 	server2, err := NewServer(conf2.serverConf)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, server2)
+	defer server2.Close()
 	time.Sleep(time.Second)
 
 	kv2 := database.KV{
